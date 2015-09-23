@@ -1,0 +1,36 @@
+
+"""
+5. Do a "text search" for the "abstract","journal_title" fields and update those records where the term "tobacco" appears, by adding a new field "cause" and value is "tobacco".
+"""
+db.vienna_publications_data_simplified_v1.update({$or :[{'abstract' : {$regex: 'tobacco'}}, {'journal_title' : {$regex: 'tobacco'}}]}, {$set: {'cause': 'tobacco'}}, {multi:true})
+
+
+"""
+4. Remove all entries of "reference_pmids" where it is an empty array.
+"""
+db.vienna_publications_data_simplified_v1.remove({'reference_pmids':[]})
+
+
+"""
+mongrestore of the .bson file 
+"""
+
+mongorestore vienna_publications_data_simplified_v1.bson --db testData
+
+
+"""
+9. Take a "mongodump" of the main collection.
+"""
+mongodump --db=testData --collection=vienna_publications_data_simplified_v1 --out=.
+
+
+
+
+"""
+3. Add a new field "category" with value as "lung cancer" for all entries having "year" > 1990 and "breast cancer" for all entries "year" < 1990.
+"""
+
+db.vienna_publications_data_simplified_v1.update({year: {$gt: '1990'}}, {$set: {'category': 'lung cancer'}}, {multi:true})
+
+db.vienna_publications_data_simplified_v1.update({year: {$lt: '1990'}}, {$set: {'category': 'breast cancer'}}, {multi:true})
+
